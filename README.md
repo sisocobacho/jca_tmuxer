@@ -132,6 +132,14 @@ jca_tmuxer --list
 jca_tmuxer my_project --print-config
 ```
 
+### Save a missing project to config
+
+```bash
+jca_tmuxer my_project --save --root ~/code/my_project
+```
+
+`--save` is a no-op when the project already exists in config.
+
 ## Ad-hoc Command Syntax
 
 - `"command"` runs in project root
@@ -166,6 +174,11 @@ Highest to lowest priority:
 - `projects.<name>.root`: project root path
 - `projects.<name>.extend`: merge with defaults when true
 - `projects.<name>.windows`: project window definitions
+
+Save-related CLI options:
+
+- `--save`: persist a missing project entry before launching
+- `--root <PATH>`: explicit root path used with `--save`
 
 Window fields:
 

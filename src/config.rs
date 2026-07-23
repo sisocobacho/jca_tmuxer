@@ -162,3 +162,49 @@ pub fn builtin_defaults() -> Config {
         projects: BTreeMap::new(),
     }
 }
+
+pub fn resolve_write_path(args: &Args) -> Result<PathBuf> {
+    if let Some(path) = args.config.as_ref() {
+        return Ok(path.clone());
+    }
+
+    if let Ok(path) = std::env::var("JCA_TMUXER_CONFIG") {
+        return Ok(PathBuf::from(path));
+    }
+
+    let Some(dirs) = ProjectDirs::from("", "", "jca_tmuxer") else {
+        anyhow::bail!("cannot determine user config directory")
+    };
+    Ok(dirs.config_dir().join("config.yaml"))
+}
+
+pub fn save_project_root(args: &Args, project_name: &str, root: &Path) -> Result<bool> {
+    let config_path = resolve_write_path(args)?;
+    if let Some(parent) = config_path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("failed to create config directory {}", parent.display()))?;
+    }
+
+    let mut cfg = if config_path.exists() {
+        load_path(&config_path)?
+    } else {
+        Config::default()
+    };
+
+    if cfg.projects.contains_key(project_name) {
+        return Ok(false);
+    }
+
+    cfg.projects.insert(
+        project_name.to_string(),
+        ProjectConfig {
+            root: Some(root.to_string_lossy().to_string()),
+            ..ProjectConfig::default()
+        },
+    );
+
+    let serialized = serde_yaml::to_string(&cfg)?;
+    fs::write(&config_path, serialized)
+        .with_context(|| format!("failed to write config at {}", config_path.display()))?;
+    Ok(true)
+}

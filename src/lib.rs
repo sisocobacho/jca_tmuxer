@@ -8,6 +8,7 @@ pub mod tmux;
 use anyhow::Result;
 use cli::Args;
 use std::io::IsTerminal;
+use std::path::PathBuf;
 
 pub fn run(args: Args) -> Result<i32> {
     if args.list {
@@ -18,12 +19,23 @@ pub fn run(args: Args) -> Result<i32> {
         return Ok(0);
     }
 
-    let cfg = config::load_from_args(&args)?;
-    let project_name = args
+    let mut cfg = config::load_from_args(&args)?;
+    let project_input = args
         .project
         .as_deref()
         .ok_or_else(|| anyhow::anyhow!("project is required unless --list is used"))?;
-    let project = resolver::resolve_project(&cfg, project_name)?;
+
+    if args.save && !cfg.projects.contains_key(project_input) {
+        let root = resolve_root_for_save(&args, &cfg, project_input)?;
+        let key = resolver::project_key_from_input(project_input, &root);
+        let saved = config::save_project_root(&args, &key, &root)?;
+        if saved {
+            eprintln!("saved project '{key}' -> {}", root.display());
+        }
+        cfg = config::load_from_args(&args)?;
+    }
+
+    let project = resolver::resolve_project(&cfg, project_input)?;
 
     if !args.dry_run {
         tmux::ensure_tmux_installed()?;
@@ -65,4 +77,30 @@ pub fn run(args: Args) -> Result<i32> {
     }
 
     Ok(0)
+}
+
+fn resolve_root_for_save(
+    args: &Args,
+    cfg: &config::Config,
+    project_input: &str,
+) -> Result<PathBuf> {
+    let root = if let Some(override_root) = args.root.as_ref() {
+        resolver::expand_path(&override_root.to_string_lossy())
+    } else {
+        resolver::resolve_candidate_root_for_save(cfg, project_input).ok_or_else(|| {
+            anyhow::anyhow!(
+                "cannot resolve root for '{project_input}'. pass --root <path> or add search_paths"
+            )
+        })?
+    };
+
+    if !root.exists() {
+        anyhow::bail!("save root does not exist: {}", root.display());
+    }
+    if !root.is_dir() {
+        anyhow::bail!("save root is not a directory: {}", root.display());
+    }
+
+    let canonical = std::fs::canonicalize(&root)?;
+    Ok(canonical)
 }

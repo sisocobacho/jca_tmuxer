@@ -105,6 +105,24 @@ fn resolve_from_search_paths(config: &Config, input: &str) -> Option<PathBuf> {
     None
 }
 
+pub fn resolve_candidate_root_for_save(config: &Config, input: &str) -> Option<PathBuf> {
+    let input_path = Path::new(input);
+    if input_path.exists() {
+        return std::fs::canonicalize(input_path).ok();
+    }
+    resolve_from_search_paths(config, input)
+}
+
+pub fn project_key_from_input(input: &str, resolved_root: &Path) -> String {
+    if Path::new(input).exists() {
+        return resolved_root
+            .file_name()
+            .map(|v| v.to_string_lossy().to_string())
+            .unwrap_or_else(|| input.to_string());
+    }
+    input.to_string()
+}
+
 pub fn expand_path(raw: &str) -> PathBuf {
     let expanded = shellexpand::full(raw)
         .map(|v| v.to_string())

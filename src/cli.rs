@@ -15,6 +15,12 @@ pub struct Args {
     #[arg(short = 'c', long = "config")]
     pub config: Option<PathBuf>,
 
+    #[arg(long = "save")]
+    pub save: bool,
+
+    #[arg(long = "root")]
+    pub root: Option<PathBuf>,
+
     #[arg(short = 'n', long = "new")]
     pub new: bool,
 

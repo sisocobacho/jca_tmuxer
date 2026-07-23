@@ -8,7 +8,9 @@ pub struct AdhocCommand {
 }
 
 pub fn parse_adhoc(raw: &[String], project_root: &Path) -> Vec<AdhocCommand> {
-    raw.iter().map(|value| parse_one(value, project_root)).collect()
+    raw.iter()
+        .map(|value| parse_one(value, project_root))
+        .collect()
 }
 
 fn parse_one(raw: &str, project_root: &Path) -> AdhocCommand {
