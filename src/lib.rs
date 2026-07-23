@@ -19,7 +19,11 @@ pub fn run(args: Args) -> Result<i32> {
         return Ok(0);
     }
 
-    let mut cfg = config::load_from_args(&args)?;
+    let mut cfg = if args.save {
+        config::load_from_args_allow_missing(&args)?
+    } else {
+        config::load_from_args(&args)?
+    };
     let project_input = args
         .project
         .as_deref()
@@ -28,7 +32,12 @@ pub fn run(args: Args) -> Result<i32> {
     if args.save && !cfg.projects.contains_key(project_input) {
         let root = resolve_root_for_save(&args, &cfg, project_input)?;
         let key = resolver::project_key_from_input(project_input, &root);
-        let saved = config::save_project_root(&args, &key, &root)?;
+        let windows = if args.adhoc_commands.is_empty() {
+            Some(cfg.defaults.windows.clone())
+        } else {
+            None
+        };
+        let saved = config::save_project(&args, &key, &root, windows)?;
         if saved {
             eprintln!("saved project '{key}' -> {}", root.display());
         }

@@ -51,12 +51,27 @@ pub struct PaneConfig {
 }
 
 pub fn load_from_args(args: &Args) -> Result<Config> {
+    load_from_args_with_missing_policy(args, false)
+}
+
+pub fn load_from_args_allow_missing(args: &Args) -> Result<Config> {
+    load_from_args_with_missing_policy(args, true)
+}
+
+fn load_from_args_with_missing_policy(args: &Args, allow_missing: bool) -> Result<Config> {
     if let Some(path) = args.config.as_ref() {
+        if allow_missing && !path.exists() {
+            return Ok(builtin_defaults());
+        }
         return Ok(merge(builtin_defaults(), load_path(path)?));
     }
 
     if let Ok(path) = std::env::var("JCA_TMUXER_CONFIG") {
-        return Ok(merge(builtin_defaults(), load_path(Path::new(&path))?));
+        let config_path = Path::new(&path);
+        if allow_missing && !config_path.exists() {
+            return Ok(builtin_defaults());
+        }
+        return Ok(merge(builtin_defaults(), load_path(config_path)?));
     }
 
     let mut base = load_default_user_config()?;
@@ -178,7 +193,12 @@ pub fn resolve_write_path(args: &Args) -> Result<PathBuf> {
     Ok(dirs.config_dir().join("config.yaml"))
 }
 
-pub fn save_project_root(args: &Args, project_name: &str, root: &Path) -> Result<bool> {
+pub fn save_project(
+    args: &Args,
+    project_name: &str,
+    root: &Path,
+    windows: Option<Vec<WindowConfig>>,
+) -> Result<bool> {
     let config_path = resolve_write_path(args)?;
     if let Some(parent) = config_path.parent() {
         fs::create_dir_all(parent)
@@ -188,20 +208,22 @@ pub fn save_project_root(args: &Args, project_name: &str, root: &Path) -> Result
     let mut cfg = if config_path.exists() {
         load_path(&config_path)?
     } else {
-        Config::default()
+        builtin_defaults()
     };
 
     if cfg.projects.contains_key(project_name) {
         return Ok(false);
     }
 
-    cfg.projects.insert(
-        project_name.to_string(),
-        ProjectConfig {
-            root: Some(root.to_string_lossy().to_string()),
-            ..ProjectConfig::default()
-        },
-    );
+    let mut project = ProjectConfig {
+        root: Some(root.to_string_lossy().to_string()),
+        ..ProjectConfig::default()
+    };
+    if let Some(default_windows) = windows {
+        project.windows = default_windows;
+    }
+
+    cfg.projects.insert(project_name.to_string(), project);
 
     let serialized = serde_yaml::to_string(&cfg)?;
     fs::write(&config_path, serialized)

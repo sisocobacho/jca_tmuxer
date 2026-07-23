@@ -140,6 +140,21 @@ jca_tmuxer my_project --save --root ~/code/my_project
 
 `--save` is a no-op when the project already exists in config.
 
+When `--save` creates a new config file, it writes the full built-in defaults. When saving a missing project without ad-hoc commands, it also persists default windows under that project.
+
+More examples:
+
+```bash
+# Save from a discovered search_paths match (for example ~/code/my_api)
+jca_tmuxer my_api --save
+
+# Save from a direct path input (project key becomes path basename)
+jca_tmuxer ~/code/monorepo --save
+
+# Save and launch with ad-hoc windows
+jca_tmuxer my_project --save --root ~/code/my_project "npm run dev" "npm test"
+```
+
 ## Ad-hoc Command Syntax
 
 - `"command"` runs in project root
