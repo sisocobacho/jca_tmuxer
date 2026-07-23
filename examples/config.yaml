@@ -1,0 +1,47 @@
+search_paths:
+  - ~/code
+  - ~/projects
+  - ~/workspace
+
+defaults:
+  layout: stacked
+  windows:
+    - name: editor
+      command: nvim
+      directory: "<project_root>"
+    - name: git
+      command: lazygit
+      directory: "<project_root>"
+    - name: terminal
+      command: bash
+      directory: "<project_root>"
+    - name: opencode
+      command: opencode
+      directory: "<project_root>"
+
+projects:
+  my_project:
+    root: ~/code/my_project
+    windows:
+      - name: editor
+        command: nvim
+      - name: api
+        command: npm run dev
+        directory: ~/code/my_project/packages/api
+      - name: frontend
+        command: npm start
+        directory: ~/code/my_project/packages/web
+
+  monorepo:
+    root: ~/code/monorepo
+    extend: true
+    windows:
+      - name: services
+        layout: main-vertical
+        panes:
+          - command: npm run dev
+            directory: ~/code/monorepo/services/api
+            size: 60
+          - command: docker compose logs -f
+            directory: ~/code/monorepo
+            size: 40
