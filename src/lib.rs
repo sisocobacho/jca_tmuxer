@@ -11,6 +11,18 @@ use std::io::IsTerminal;
 use std::path::PathBuf;
 
 pub fn run(args: Args) -> Result<i32> {
+    if args.config_path {
+        let config_path = config::resolve_write_path(&args)?;
+        println!("{}", config_path.display());
+        return Ok(0);
+    }
+
+    if args.edit_config {
+        let config_path = config::ensure_config_exists(&args)?;
+        config::open_in_editor(&config_path)?;
+        return Ok(0);
+    }
+
     if args.list {
         let cfg = config::load_from_args(&args)?;
         for name in cfg.projects.keys() {
@@ -24,10 +36,11 @@ pub fn run(args: Args) -> Result<i32> {
     } else {
         config::load_from_args(&args)?
     };
-    let project_input = args
-        .project
-        .as_deref()
-        .ok_or_else(|| anyhow::anyhow!("project is required unless --list is used"))?;
+    let project_input = args.project.as_deref().ok_or_else(|| {
+        anyhow::anyhow!(
+            "project is required unless one of --list, --config-path, or --edit-config is used"
+        )
+    })?;
 
     if args.save && !cfg.projects.contains_key(project_input) {
         let root = resolve_root_for_save(&args, &cfg, project_input)?;

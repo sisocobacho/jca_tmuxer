@@ -21,6 +21,8 @@ fn save_project_root_writes_missing_project() {
         verbose: 0,
         list: false,
         print_config: false,
+        config_path: false,
+        edit_config: false,
     };
 
     let changed = config::save_project(&args, "my_project", &root, None).expect("save");
@@ -57,6 +59,8 @@ fn save_project_root_is_noop_when_project_exists() {
         verbose: 0,
         list: false,
         print_config: false,
+        config_path: false,
+        edit_config: false,
     };
 
     let changed = config::save_project(&args, "my_project", &root, None).expect("save");
@@ -82,6 +86,8 @@ fn save_project_seeds_new_config_with_builtin_defaults() {
         verbose: 0,
         list: false,
         print_config: false,
+        config_path: false,
+        edit_config: false,
     };
 
     let changed = config::save_project(&args, "my_project", &root, None).expect("save");
@@ -113,6 +119,8 @@ fn save_project_persists_project_windows_when_provided() {
         verbose: 0,
         list: false,
         print_config: false,
+        config_path: false,
+        edit_config: false,
     };
 
     let defaults = config::builtin_defaults().defaults.windows;

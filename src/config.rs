@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Config {
@@ -229,4 +230,47 @@ pub fn save_project(
     fs::write(&config_path, serialized)
         .with_context(|| format!("failed to write config at {}", config_path.display()))?;
     Ok(true)
+}
+
+pub fn ensure_config_exists(args: &Args) -> Result<PathBuf> {
+    let config_path = resolve_write_path(args)?;
+    if let Some(parent) = config_path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("failed to create config directory {}", parent.display()))?;
+    }
+
+    if !config_path.exists() {
+        let serialized = serde_yaml::to_string(&builtin_defaults())?;
+        fs::write(&config_path, serialized)
+            .with_context(|| format!("failed to write config at {}", config_path.display()))?;
+    }
+
+    Ok(config_path)
+}
+
+pub fn open_in_editor(path: &Path) -> Result<()> {
+    let editor = std::env::var("VISUAL")
+        .ok()
+        .filter(|v| !v.trim().is_empty())
+        .or_else(|| {
+            std::env::var("EDITOR")
+                .ok()
+                .filter(|v| !v.trim().is_empty())
+        })
+        .unwrap_or_else(|| "vi".to_string());
+
+    let status = Command::new("sh")
+        .arg("-c")
+        .arg("editor_cmd=\"$1\"; target=\"$2\"; exec $editor_cmd \"$target\"")
+        .arg("sh")
+        .arg(editor.as_str())
+        .arg(path.as_os_str())
+        .status()
+        .with_context(|| format!("failed to launch editor '{}'", editor))?;
+
+    if !status.success() {
+        anyhow::bail!("editor '{}' exited with status {}", editor, status);
+    }
+
+    Ok(())
 }

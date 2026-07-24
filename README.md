@@ -158,6 +158,21 @@ jca_tmuxer my_project --dry-run
 jca_tmuxer --list
 ```
 
+### Print effective config path
+
+```bash
+jca_tmuxer --config-path
+```
+
+### Open config in your editor
+
+```bash
+jca_tmuxer --edit-config
+```
+
+`--edit-config` uses `VISUAL`, then `EDITOR`, then falls back to `vi`.
+If the config file does not exist yet, `jca_tmuxer` creates it with built-in defaults before opening it.
+
 ### Print resolved window plan
 
 ```bash

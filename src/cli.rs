@@ -6,7 +6,7 @@ use std::path::PathBuf;
 #[command(version)]
 #[command(about = "Project-aware tmux session launcher")]
 pub struct Args {
-    #[arg(required_unless_present = "list")]
+    #[arg(required_unless_present_any = ["list", "config_path", "edit_config"])]
     pub project: Option<String>,
 
     #[arg(value_name = "ADHOC_COMMAND")]
@@ -38,4 +38,10 @@ pub struct Args {
 
     #[arg(long = "print-config")]
     pub print_config: bool,
+
+    #[arg(long = "config-path")]
+    pub config_path: bool,
+
+    #[arg(long = "edit-config")]
+    pub edit_config: bool,
 }
