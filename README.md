@@ -14,7 +14,7 @@
 ## Requirements
 
 - `tmux` installed and available in `PATH`
-- Rust toolchain (`cargo`) for building/installing
+- Rust toolchain (`cargo`) only if building from source
 
 Check tmux:
 
@@ -24,7 +24,39 @@ tmux -V
 
 ## Installation
 
-### From source (current repo)
+### One-command Linux install (no Rust required)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sisocobacho/jca_tmuxer/main/install.sh | sh
+```
+
+Options:
+
+```bash
+# Install to a custom directory
+curl -fsSL https://raw.githubusercontent.com/sisocobacho/jca_tmuxer/main/install.sh | INSTALL_DIR=/usr/local/bin sh
+
+# Install a specific release tag
+curl -fsSL https://raw.githubusercontent.com/sisocobacho/jca_tmuxer/main/install.sh | VERSION=v0.1.0 sh
+```
+
+### Manual binary install (Linux)
+
+1. Download assets from GitHub Releases for your architecture:
+
+- `jca_tmuxer-x86_64-unknown-linux-musl.tar.gz`
+- `jca_tmuxer-aarch64-unknown-linux-musl.tar.gz`
+- `checksums.txt`
+
+2. Verify and install:
+
+```bash
+sha256sum -c checksums.txt --ignore-missing
+tar -xzf jca_tmuxer-x86_64-unknown-linux-musl.tar.gz
+install jca_tmuxer ~/.local/bin/jca_tmuxer
+```
+
+### From source
 
 ```bash
 cargo install --path .
