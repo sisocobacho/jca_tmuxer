@@ -17,3 +17,23 @@ fn parses_directory_prefix() {
     assert_eq!(parsed[0].command, "npm run dev");
     assert_eq!(parsed[0].directory, Path::new("/tmp/project/api"));
 }
+
+#[test]
+fn preserves_escaped_colon_in_command() {
+    let parsed = parse_adhoc(
+        &["my\\:label:echo ok".to_string()],
+        Path::new("/tmp/project"),
+    );
+    assert_eq!(parsed[0].command, "my:label:echo ok");
+    assert_eq!(parsed[0].directory, Path::new("/tmp/project"));
+}
+
+#[test]
+fn falls_back_to_project_root_for_non_path_prefix_before_colon() {
+    let parsed = parse_adhoc(
+        &["label:npm run dev".to_string()],
+        Path::new("/tmp/project"),
+    );
+    assert_eq!(parsed[0].command, "label:npm run dev");
+    assert_eq!(parsed[0].directory, Path::new("/tmp/project"));
+}
