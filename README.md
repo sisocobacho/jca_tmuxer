@@ -202,6 +202,22 @@ jca_tmuxer ~/code/monorepo --save
 jca_tmuxer my_project --save --root ~/code/my_project "npm run dev" "npm test"
 ```
 
+### Remove a project and tmux session
+
+```bash
+jca_tmuxer my_project --remove
+```
+
+`--remove` asks for confirmation before deleting.
+
+For scripts/non-interactive usage, pass `--yes`:
+
+```bash
+jca_tmuxer my_project --remove --yes
+```
+
+If neither the config project nor tmux session exists, `jca_tmuxer` prints `Nothing was removed.`
+
 ## Ad-hoc Command Syntax
 
 - `"command"` runs in project root
@@ -241,6 +257,8 @@ Save-related CLI options:
 
 - `--save`: persist a missing project entry before launching
 - `--root <PATH>`: explicit root path used with `--save`
+- `--remove`: remove a project entry and matching tmux session
+- `--yes`: skip `--remove` confirmation prompt
 
 Window fields:
 

@@ -232,6 +232,25 @@ pub fn save_project(
     Ok(true)
 }
 
+pub fn remove_project(args: &Args, project_name: &str) -> Result<bool> {
+    let config_path = resolve_write_path(args)?;
+    if !config_path.exists() {
+        return Ok(false);
+    }
+
+    let mut cfg = load_path(&config_path)?;
+    let removed = cfg.projects.remove(project_name).is_some();
+    if !removed {
+        return Ok(false);
+    }
+
+    let serialized = serde_yaml::to_string(&cfg)?;
+    fs::write(&config_path, serialized)
+        .with_context(|| format!("failed to write config at {}", config_path.display()))?;
+
+    Ok(true)
+}
+
 pub fn ensure_config_exists(args: &Args) -> Result<PathBuf> {
     let config_path = resolve_write_path(args)?;
     if let Some(parent) = config_path.parent() {

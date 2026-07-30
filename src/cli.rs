@@ -18,6 +18,12 @@ pub struct Args {
     #[arg(long = "save")]
     pub save: bool,
 
+    #[arg(long = "remove", conflicts_with_all = ["save", "root", "new", "no_attach", "dry_run", "print_config", "list", "config_path", "edit_config"])]
+    pub remove: bool,
+
+    #[arg(long = "yes", requires = "remove")]
+    pub yes: bool,
+
     #[arg(long = "root")]
     pub root: Option<PathBuf>,
 

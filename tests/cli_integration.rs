@@ -1,6 +1,34 @@
 use assert_cmd::Command;
 use jca_tmuxer::config;
 
+fn install_fake_tmux(bin_dir: &std::path::Path) {
+    let script_path = bin_dir.join("tmux");
+    std::fs::write(
+        &script_path,
+        r#"#!/bin/sh
+if [ "$1" = "has-session" ]; then
+  if [ "$FAKE_TMUX_HAS_SESSION" = "1" ]; then
+    exit 0
+  fi
+  exit 1
+fi
+
+exit 0
+"#,
+    )
+    .expect("write fake tmux");
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mut perms = std::fs::metadata(&script_path)
+            .expect("metadata")
+            .permissions();
+        perms.set_mode(0o755);
+        std::fs::set_permissions(&script_path, perms).expect("set perms");
+    }
+}
+
 #[test]
 fn dry_run_prints_tmux_commands() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -324,4 +352,111 @@ fn falls_back_to_builtin_defaults_when_user_config_is_missing() {
         .success()
         .stdout(predicates::str::contains("- name: editor"))
         .stdout(predicates::str::contains("command: nvim"));
+}
+
+#[test]
+fn remove_yes_deletes_project_from_config() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let cfg_path = temp.path().join("config.yaml");
+    std::fs::write(
+        &cfg_path,
+        "projects:\n  app:\n    root: /tmp/app\n  keep:\n    root: /tmp/keep\n",
+    )
+    .expect("write config");
+
+    let bin_dir = temp.path().join("bin");
+    std::fs::create_dir_all(&bin_dir).expect("mkdir bin");
+    install_fake_tmux(&bin_dir);
+
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg("app")
+        .arg("--remove")
+        .arg("--yes")
+        .arg("--config")
+        .arg(&cfg_path)
+        .env("PATH", &bin_dir)
+        .env("FAKE_TMUX_HAS_SESSION", "0")
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("Removed: config project 'app'"));
+
+    let cfg_text = std::fs::read_to_string(&cfg_path).expect("read config");
+    assert!(!cfg_text.contains("\n  app:\n"));
+    assert!(cfg_text.contains("\n  keep:\n"));
+}
+
+#[test]
+fn remove_yes_reports_nothing_removed_when_targets_missing() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let cfg_path = temp.path().join("config.yaml");
+    std::fs::write(&cfg_path, "projects: {}\n").expect("write config");
+
+    let bin_dir = temp.path().join("bin");
+    std::fs::create_dir_all(&bin_dir).expect("mkdir bin");
+    install_fake_tmux(&bin_dir);
+
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg("app")
+        .arg("--remove")
+        .arg("--yes")
+        .arg("--config")
+        .arg(&cfg_path)
+        .env("PATH", &bin_dir)
+        .env("FAKE_TMUX_HAS_SESSION", "0")
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("Nothing was removed."));
+}
+
+#[test]
+fn remove_without_yes_in_non_tty_fails_with_hint() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let cfg_path = temp.path().join("config.yaml");
+    std::fs::write(&cfg_path, "projects: {}\n").expect("write config");
+
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg("app")
+        .arg("--remove")
+        .arg("--config")
+        .arg(&cfg_path)
+        .assert()
+        .failure()
+        .stderr(predicates::str::contains(
+            "--remove requires confirmation from a TTY. Re-run with --yes",
+        ));
+}
+
+#[test]
+fn remove_path_input_uses_basename_for_config_key() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let cfg_path = temp.path().join("config.yaml");
+    let root = temp.path().join("monorepo");
+    std::fs::create_dir_all(&root).expect("mkdir root");
+    std::fs::write(
+        &cfg_path,
+        "projects:\n  monorepo:\n    root: /tmp/monorepo\n  keep:\n    root: /tmp/keep\n",
+    )
+    .expect("write config");
+
+    let bin_dir = temp.path().join("bin");
+    std::fs::create_dir_all(&bin_dir).expect("mkdir bin");
+    install_fake_tmux(&bin_dir);
+
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg(root.to_string_lossy().to_string())
+        .arg("--remove")
+        .arg("--yes")
+        .arg("--config")
+        .arg(&cfg_path)
+        .env("PATH", &bin_dir)
+        .env("FAKE_TMUX_HAS_SESSION", "0")
+        .assert()
+        .success()
+        .stdout(predicates::str::contains(
+            "Removed: config project 'monorepo'",
+        ));
+
+    let cfg_text = std::fs::read_to_string(&cfg_path).expect("read config");
+    assert!(!cfg_text.contains("\n  monorepo:\n"));
+    assert!(cfg_text.contains("\n  keep:\n"));
 }

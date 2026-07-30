@@ -97,6 +97,14 @@ pub fn kill_session(session_name: &str) -> Result<()> {
     run_tmux(["kill-session", "-t", session_name]).map(|_| ())
 }
 
+pub fn kill_session_if_exists(session_name: &str) -> Result<bool> {
+    if has_session(session_name)? {
+        kill_session(session_name)?;
+        return Ok(true);
+    }
+    Ok(false)
+}
+
 pub fn create_session(session_name: &str, windows: &[WindowPlan]) -> Result<()> {
     if windows.is_empty() {
         bail!("no windows to create")

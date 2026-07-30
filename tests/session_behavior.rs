@@ -242,3 +242,79 @@ fn no_attach_suppresses_non_tty_skip_warning() {
     assert_eq!(lines.len(), 1, "expected only has-session call");
     assert!(lines[0].starts_with("has-session -t app"));
 }
+
+#[test]
+fn remove_yes_kills_existing_session() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let root = temp.path().join("app");
+    std::fs::create_dir_all(&root).expect("mkdir");
+
+    let cfg_path = temp.path().join("config.yaml");
+    write_project_config(&cfg_path, &root);
+
+    let bin_dir = temp.path().join("bin");
+    std::fs::create_dir_all(&bin_dir).expect("mkdir bin");
+    install_fake_tmux(&bin_dir);
+
+    let log_path = temp.path().join("tmux.log");
+
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg("app")
+        .arg("--remove")
+        .arg("--yes")
+        .arg("--config")
+        .arg(&cfg_path)
+        .env("PATH", &bin_dir)
+        .env("TMUX_LOG", &log_path)
+        .env("FAKE_TMUX_HAS_SESSION", "1")
+        .assert()
+        .success();
+
+    let lines = read_log(&log_path);
+    assert!(
+        lines.iter().any(|l| l.starts_with("has-session -t app")),
+        "expected has-session call in {lines:?}"
+    );
+    assert!(
+        lines.iter().any(|l| l.starts_with("kill-session -t app")),
+        "expected kill-session call in {lines:?}"
+    );
+}
+
+#[test]
+fn remove_yes_does_not_kill_missing_session() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let root = temp.path().join("app");
+    std::fs::create_dir_all(&root).expect("mkdir");
+
+    let cfg_path = temp.path().join("config.yaml");
+    write_project_config(&cfg_path, &root);
+
+    let bin_dir = temp.path().join("bin");
+    std::fs::create_dir_all(&bin_dir).expect("mkdir bin");
+    install_fake_tmux(&bin_dir);
+
+    let log_path = temp.path().join("tmux.log");
+
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg("app")
+        .arg("--remove")
+        .arg("--yes")
+        .arg("--config")
+        .arg(&cfg_path)
+        .env("PATH", &bin_dir)
+        .env("TMUX_LOG", &log_path)
+        .env("FAKE_TMUX_HAS_SESSION", "0")
+        .assert()
+        .success();
+
+    let lines = read_log(&log_path);
+    assert!(
+        lines.iter().any(|l| l.starts_with("has-session -t app")),
+        "expected has-session call in {lines:?}"
+    );
+    assert!(
+        lines.iter().all(|l| !l.starts_with("kill-session -t app")),
+        "did not expect kill-session call in {lines:?}"
+    );
+}
