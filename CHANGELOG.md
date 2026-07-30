@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Add `--remove` mode to delete a project from config and remove its tmux session
+- Add interactive removal confirmation prompt with `--yes` override for non-interactive usage
+- Print `Nothing was removed.` when no matching config project or tmux session exists
+- Print concise removal results for config project and tmux session when removed
+- Expand integration and behavior tests for remove flow and idempotent semantics
+
 ## 0.2.0
 
 - Add GitHub Release workflow for Linux musl binaries (`x86_64` and `aarch64`)
