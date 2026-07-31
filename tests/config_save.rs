@@ -25,6 +25,10 @@ fn save_project_root_writes_missing_project() {
         print_config: false,
         config_path: false,
         edit_config: false,
+        all: false,
+        projects: vec![],
+        open_terminals: false,
+        terminal_cmd: None,
     };
 
     let changed = config::save_project(&args, "my_project", &root, None).expect("save");
@@ -65,6 +69,10 @@ fn save_project_root_is_noop_when_project_exists() {
         print_config: false,
         config_path: false,
         edit_config: false,
+        all: false,
+        projects: vec![],
+        open_terminals: false,
+        terminal_cmd: None,
     };
 
     let changed = config::save_project(&args, "my_project", &root, None).expect("save");
@@ -94,6 +102,10 @@ fn save_project_seeds_new_config_with_builtin_defaults() {
         print_config: false,
         config_path: false,
         edit_config: false,
+        all: false,
+        projects: vec![],
+        open_terminals: false,
+        terminal_cmd: None,
     };
 
     let changed = config::save_project(&args, "my_project", &root, None).expect("save");
@@ -129,6 +141,10 @@ fn save_project_persists_project_windows_when_provided() {
         print_config: false,
         config_path: false,
         edit_config: false,
+        all: false,
+        projects: vec![],
+        open_terminals: false,
+        terminal_cmd: None,
     };
 
     let defaults = config::builtin_defaults().defaults.windows;
@@ -166,6 +182,10 @@ fn remove_project_deletes_existing_project() {
         print_config: false,
         config_path: false,
         edit_config: false,
+        all: false,
+        projects: vec![],
+        open_terminals: false,
+        terminal_cmd: None,
     };
 
     let removed = config::remove_project(&args, "my_project").expect("remove");
@@ -197,6 +217,10 @@ fn remove_project_is_noop_when_project_missing() {
         print_config: false,
         config_path: false,
         edit_config: false,
+        all: false,
+        projects: vec![],
+        open_terminals: false,
+        terminal_cmd: None,
     };
 
     let removed = config::remove_project(&args, "my_project").expect("remove");
@@ -224,6 +248,10 @@ fn remove_project_is_noop_when_config_missing() {
         print_config: false,
         config_path: false,
         edit_config: false,
+        all: false,
+        projects: vec![],
+        open_terminals: false,
+        terminal_cmd: None,
     };
 
     let removed = config::remove_project(&args, "my_project").expect("remove");

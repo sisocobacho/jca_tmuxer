@@ -164,6 +164,30 @@ jca_tmuxer my_project --dry-run
 jca_tmuxer --list
 ```
 
+### Launch all configured projects
+
+```bash
+jca_tmuxer --all --no-attach
+```
+
+### Launch a subset of projects
+
+```bash
+jca_tmuxer --projects api web worker --no-attach
+```
+
+### Open each selected project in a new terminal
+
+```bash
+jca_tmuxer --projects api web --open-terminals
+```
+
+By default terminal command is auto-detected from your current environment/process tree. You can override it explicitly:
+
+```bash
+jca_tmuxer --all --open-terminals --terminal-cmd 'wezterm start -- tmux attach-session -t {session}'
+```
+
 ### Print effective config path
 
 ```bash
@@ -265,6 +289,10 @@ Save-related CLI options:
 - `--root <PATH>`: explicit root path used with `--save`
 - `--remove`: remove a project entry and matching tmux session
 - `--yes`: skip `--remove` confirmation prompt
+- `--all`: launch all configured projects in one run
+- `--projects <PROJECT>...`: launch only selected configured projects
+- `--open-terminals`: open each selected project session in a separate terminal
+- `--terminal-cmd <TEMPLATE>`: terminal command template with `{session}` placeholder
 
 Window fields:
 

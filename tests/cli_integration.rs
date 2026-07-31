@@ -188,6 +188,42 @@ fn list_prints_configured_project_names() {
 }
 
 #[test]
+fn all_mode_launches_without_positional_project() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let cfg_path = temp.path().join("config.yaml");
+    let root = temp.path().join("app");
+    std::fs::create_dir_all(&root).expect("mkdir");
+    std::fs::write(
+        &cfg_path,
+        format!(
+            "projects:\n  app:\n    root: {}\n    windows:\n      - name: editor\n        command: nvim\n",
+            root.display()
+        ),
+    )
+    .expect("write config");
+
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg("--all")
+        .arg("--dry-run")
+        .arg("--config")
+        .arg(&cfg_path)
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("tmux has-session -t app"));
+}
+
+#[test]
+fn all_and_projects_flags_conflict() {
+    let mut cmd = Command::cargo_bin("jca_tmuxer").expect("bin");
+    cmd.arg("--all")
+        .arg("--projects")
+        .arg("app")
+        .assert()
+        .failure()
+        .stderr(predicates::str::contains("cannot be used with"));
+}
+
+#[test]
 fn print_config_outputs_resolved_window_plan() {
     let temp = tempfile::tempdir().expect("tempdir");
     let cfg_path = temp.path().join("config.yaml");
