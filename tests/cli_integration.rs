@@ -117,6 +117,20 @@ fn config_path_prints_without_project() {
 }
 
 #[test]
+fn short_binary_alias_runs_same_cli() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let cfg_path = temp.path().join("config.yaml");
+
+    let mut cmd = Command::cargo_bin("jtmx").expect("bin");
+    cmd.arg("--config-path")
+        .arg("--config")
+        .arg(&cfg_path)
+        .assert()
+        .success()
+        .stdout(format!("{}\n", cfg_path.display()));
+}
+
+#[test]
 fn edit_config_creates_defaults_and_uses_editor() {
     let temp = tempfile::tempdir().expect("tempdir");
     let cfg_path = temp.path().join("config.yaml");

@@ -2,6 +2,8 @@
 
 `jca_tmuxer` is a project-aware tmux launcher that creates or reuses a tmux session per project, opens predefined windows/panes, and optionally appends ad-hoc commands.
 
+You can invoke it as either `jca_tmuxer` or the short alias `jtmx`.
+
 ## Features
 
 - Launch tmux sessions by project name or path
@@ -110,6 +112,8 @@ projects:
 
 ```bash
 jca_tmuxer my_project
+# or
+jtmx my_project
 ```
 
 If session `my_project` exists, `jca_tmuxer` attaches to it. If not, it creates it and runs configured windows/commands.
@@ -118,6 +122,8 @@ If session `my_project` exists, `jca_tmuxer` attaches to it. If not, it creates 
 
 ```bash
 jca_tmuxer <PROJECT> [ADHOC_COMMANDS]... [OPTIONS]
+# or
+jtmx <PROJECT> [ADHOC_COMMANDS]... [OPTIONS]
 ```
 
 ### Basic

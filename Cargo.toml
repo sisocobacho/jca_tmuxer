@@ -3,6 +3,10 @@ name = "jca_tmuxer"
 version = "0.3.0"
 edition = "2024"
 
+[[bin]]
+name = "jtmx"
+path = "src/bin/jtmx.rs"
+
 [dependencies]
 anyhow = "1.0"
 clap = { version = "4.5", features = ["derive"] }
