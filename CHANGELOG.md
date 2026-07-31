@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- Add `jca_tmuxer-completions` helper binary to generate shell completion scripts
+- Add completion generation tests across supported shells and custom bin names
+- Add path hints in CLI args to improve shell completion quality for `--config` and `--root`
+- Add opt-in completion install in Linux installer via `INSTALL_COMPLETIONS=1`
+- Add installer support for `COMPLETION_SHELL` and `COMPLETION_BINS`
+- Package `jca_tmuxer-completions` in GitHub release archives
+- Document manual and installer-based completion setup for `jca_tmuxer` and `jtmx`
+
 ## 0.3.0
 
 - Add `--remove` mode to delete a project from config and remove its tmux session

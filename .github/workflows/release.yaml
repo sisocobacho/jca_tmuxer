@@ -51,7 +51,8 @@ jobs:
         run: |
           asset_name="jca_tmuxer-${{ matrix.target }}"
           cp "target/${{ matrix.target }}/release/jca_tmuxer" ./jca_tmuxer
-          tar -czf "${asset_name}.tar.gz" jca_tmuxer
+          cp "target/${{ matrix.target }}/release/jca_tmuxer-completions" ./jca_tmuxer-completions
+          tar -czf "${asset_name}.tar.gz" jca_tmuxer jca_tmuxer-completions
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

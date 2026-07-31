@@ -12,7 +12,7 @@ pub struct Args {
     #[arg(value_name = "ADHOC_COMMAND")]
     pub adhoc_commands: Vec<String>,
 
-    #[arg(short = 'c', long = "config")]
+    #[arg(short = 'c', long = "config", value_hint = clap::ValueHint::FilePath)]
     pub config: Option<PathBuf>,
 
     #[arg(long = "save")]
@@ -24,7 +24,7 @@ pub struct Args {
     #[arg(long = "yes", requires = "remove")]
     pub yes: bool,
 
-    #[arg(long = "root")]
+    #[arg(long = "root", value_hint = clap::ValueHint::DirPath)]
     pub root: Option<PathBuf>,
 
     #[arg(short = 'n', long = "new")]

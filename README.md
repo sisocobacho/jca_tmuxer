@@ -40,7 +40,25 @@ curl -fsSL https://raw.githubusercontent.com/sisocobacho/jca_tmuxer/main/install
 
 # Install a specific release tag
 curl -fsSL https://raw.githubusercontent.com/sisocobacho/jca_tmuxer/main/install.sh | VERSION=v0.1.0 sh
+
+# Opt-in: install shell completions (auto-detects bash/zsh/fish)
+curl -fsSL https://raw.githubusercontent.com/sisocobacho/jca_tmuxer/main/install.sh | INSTALL_COMPLETIONS=1 sh
+
+# Opt-in: force shell and install only jtmx completion
+curl -fsSL https://raw.githubusercontent.com/sisocobacho/jca_tmuxer/main/install.sh | INSTALL_COMPLETIONS=1 COMPLETION_SHELL=bash COMPLETION_BINS="jtmx" sh
 ```
+
+Completion install env vars (Linux installer):
+
+- `INSTALL_COMPLETIONS=1`: enable completion install (default is off)
+- `COMPLETION_SHELL=bash|zsh|fish`: override shell detection from `$SHELL`
+- `COMPLETION_BINS="jca_tmuxer jtmx"`: space-separated command names to register
+
+Notes:
+
+- Auto completion install currently supports `bash`, `zsh`, and `fish` only.
+- For `zsh`, ensure `~/.zfunc` is in `fpath`, then run `autoload -Uz compinit && compinit`.
+- If shell detection fails or completion install errors, binary install still succeeds and manual setup remains available.
 
 ### Manual binary install (Linux)
 
@@ -130,6 +148,41 @@ jtmx <PROJECT> [ADHOC_COMMANDS]... [OPTIONS]
 
 ```bash
 jca_tmuxer my_project
+```
+
+## Shell Completion
+
+Generate completion scripts with the helper binary:
+
+```bash
+# for jca_tmuxer
+jca_tmuxer-completions bash > /tmp/jca_tmuxer.bash
+
+# for jtmx alias
+jca_tmuxer-completions bash --bin-name jtmx > /tmp/jtmx.bash
+```
+
+Bash install:
+
+```bash
+jca_tmuxer-completions bash > ~/.local/share/bash-completion/completions/jca_tmuxer
+jca_tmuxer-completions bash --bin-name jtmx > ~/.local/share/bash-completion/completions/jtmx
+```
+
+Zsh install:
+
+```bash
+mkdir -p ~/.zfunc
+jca_tmuxer-completions zsh > ~/.zfunc/_jca_tmuxer
+jca_tmuxer-completions zsh --bin-name jtmx > ~/.zfunc/_jtmx
+# ensure ~/.zfunc is in fpath, then run: autoload -Uz compinit && compinit
+```
+
+Fish install:
+
+```bash
+jca_tmuxer-completions fish > ~/.config/fish/completions/jca_tmuxer.fish
+jca_tmuxer-completions fish --bin-name jtmx > ~/.config/fish/completions/jtmx.fish
 ```
 
 ### Add ad-hoc commands
