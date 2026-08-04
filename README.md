@@ -106,8 +106,12 @@ defaults:
       command: nvim
       directory: "<project_root>"
     - name: git
-      command: lazygit
-      directory: "<project_root>"
+      layout: main-vertical
+      panes:
+        - command: git status
+          directory: "<project_root>"
+        - command: git log --oneline
+          directory: "<project_root>"
     - name: terminal
       command: bash
       directory: "<project_root>"

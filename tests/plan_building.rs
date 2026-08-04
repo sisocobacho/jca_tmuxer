@@ -1,4 +1,4 @@
-use jca_tmuxer::config::{Config, Defaults, ProjectConfig, WindowConfig};
+use jca_tmuxer::config::{Config, Defaults, PaneConfig, ProjectConfig, WindowConfig};
 use jca_tmuxer::plan::build_windows;
 use jca_tmuxer::resolver::ResolvedProject;
 use std::collections::BTreeMap;
@@ -191,7 +191,20 @@ fn project_windows_merge_defaults_when_extend_is_true() {
                 },
                 WindowConfig {
                     name: "git".to_string(),
-                    command: Some("lazygit".to_string()),
+                    command: None,
+                    layout: Some("main-vertical".to_string()),
+                    panes: vec![
+                        PaneConfig {
+                            command: "git status".to_string(),
+                            directory: Some("<project_root>".to_string()),
+                            size: None,
+                        },
+                        PaneConfig {
+                            command: "git log --oneline".to_string(),
+                            directory: Some("<project_root>".to_string()),
+                            size: None,
+                        },
+                    ],
                     ..WindowConfig::default()
                 },
             ],

@@ -154,10 +154,21 @@ pub fn builtin_defaults() -> Config {
                 },
                 WindowConfig {
                     name: "git".to_string(),
-                    command: Some("lazygit".to_string()),
+                    command: None,
                     directory: Some("<project_root>".to_string()),
-                    layout: None,
-                    panes: Vec::new(),
+                    layout: Some("main-vertical".to_string()),
+                    panes: vec![
+                        PaneConfig {
+                            command: "git status".to_string(),
+                            directory: Some("<project_root>".to_string()),
+                            size: None,
+                        },
+                        PaneConfig {
+                            command: "git log --oneline".to_string(),
+                            directory: Some("<project_root>".to_string()),
+                            size: None,
+                        },
+                    ],
                 },
                 WindowConfig {
                     name: "terminal".to_string(),
