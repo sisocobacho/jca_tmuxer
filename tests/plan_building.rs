@@ -11,7 +11,7 @@ fn builds_from_defaults_when_project_windows_missing() {
 
     let cfg = Config {
         defaults: Defaults {
-            layout: Some("stacked".to_string()),
+            layout: Some("main-vertical".to_string()),
             windows: vec![WindowConfig {
                 name: "editor".to_string(),
                 command: Some("nvim".to_string()),
@@ -54,7 +54,7 @@ fn appends_adhoc_windows() {
     let windows = build_windows(&cfg, &project, &["npm run dev".to_string()]).expect("plan");
     assert_eq!(windows.len(), 1);
     assert_eq!(windows[0].name, "adhoc-1");
-    assert_eq!(windows[0].layout, "stacked");
+    assert_eq!(windows[0].layout, "main-vertical");
     assert_eq!(windows[0].panes.len(), 1);
     assert_eq!(windows[0].panes[0].command, "npm run dev");
     assert_eq!(windows[0].panes[0].cwd, project.root);
@@ -96,12 +96,12 @@ fn appends_multiple_adhoc_windows_with_incremented_names() {
     assert_eq!(windows[0].name, "editor");
 
     assert_eq!(windows[1].name, "adhoc-1");
-    assert_eq!(windows[1].layout, "stacked");
+    assert_eq!(windows[1].layout, "main-vertical");
     assert_eq!(windows[1].panes[0].command, "npm run dev");
     assert_eq!(windows[1].panes[0].cwd, project.root);
 
     assert_eq!(windows[2].name, "adhoc-2");
-    assert_eq!(windows[2].layout, "stacked");
+    assert_eq!(windows[2].layout, "main-vertical");
     assert_eq!(windows[2].panes[0].command, "cargo test");
     assert_eq!(windows[2].panes[0].cwd, project.root);
 }
@@ -128,7 +128,7 @@ fn project_windows_replace_defaults_when_extend_is_false() {
 
     let cfg = Config {
         defaults: Defaults {
-            layout: Some("stacked".to_string()),
+            layout: Some("main-vertical".to_string()),
             windows: vec![WindowConfig {
                 name: "editor".to_string(),
                 command: Some("nvim".to_string()),
@@ -182,7 +182,7 @@ fn project_windows_merge_defaults_when_extend_is_true() {
 
     let cfg = Config {
         defaults: Defaults {
-            layout: Some("stacked".to_string()),
+            layout: Some("main-vertical".to_string()),
             windows: vec![
                 WindowConfig {
                     name: "editor".to_string(),
@@ -222,7 +222,7 @@ fn errors_when_window_directory_does_not_exist() {
 
     let cfg = Config {
         defaults: Defaults {
-            layout: Some("stacked".to_string()),
+            layout: Some("main-vertical".to_string()),
             windows: vec![WindowConfig {
                 name: "broken".to_string(),
                 command: Some("bash".to_string()),
@@ -259,7 +259,7 @@ fn duplicate_window_names_are_normalized() {
 
     let cfg = Config {
         defaults: Defaults {
-            layout: Some("stacked".to_string()),
+            layout: Some("main-vertical".to_string()),
             windows: vec![
                 WindowConfig {
                     name: "editor".to_string(),

@@ -6,7 +6,7 @@ use std::path::PathBuf;
 fn builds_dry_run_commands() {
     let windows = vec![WindowPlan {
         name: "editor".to_string(),
-        layout: "stacked".to_string(),
+        layout: "main-vertical".to_string(),
         panes: vec![PanePlan {
             command: "nvim".to_string(),
             cwd: PathBuf::from("/tmp/app"),
@@ -23,7 +23,7 @@ fn builds_dry_run_commands() {
 fn dry_run_includes_kill_session_when_force_new() {
     let windows = vec![WindowPlan {
         name: "editor".to_string(),
-        layout: "stacked".to_string(),
+        layout: "main-vertical".to_string(),
         panes: vec![PanePlan {
             command: "nvim".to_string(),
             cwd: PathBuf::from("/tmp/app"),
@@ -43,7 +43,7 @@ fn dry_run_covers_multi_window_and_pane_flow() {
     let windows = vec![
         WindowPlan {
             name: "editor".to_string(),
-            layout: "stacked".to_string(),
+            layout: "main-vertical".to_string(),
             panes: vec![
                 PanePlan {
                     command: "nvim".to_string(),
@@ -96,7 +96,7 @@ fn dry_run_covers_multi_window_and_pane_flow() {
     );
     assert!(
         cmds.iter()
-            .any(|c| c.contains("select-layout -t app:editor stacked"))
+            .any(|c| c.contains("select-layout -t app:editor main-vertical"))
     );
     assert!(
         cmds.iter()

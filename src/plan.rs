@@ -38,7 +38,7 @@ pub fn build_windows(
             to_plan(
                 w,
                 &project.root,
-                cfg.defaults.layout.as_deref().unwrap_or("stacked"),
+                cfg.defaults.layout.as_deref().unwrap_or("main-vertical"),
             )
         })
         .collect()
@@ -52,7 +52,7 @@ pub fn build_adhoc_windows(
     normalize_window_names(&mut windows_cfg);
     windows_cfg
         .iter()
-        .map(|w| to_plan(w, &project.root, "stacked"))
+        .map(|w| to_plan(w, &project.root, "main-vertical"))
         .collect()
 }
 
@@ -67,7 +67,7 @@ fn build_adhoc_window_configs(
             name: window_name(idx + 1),
             command: Some(cmd.command.clone()),
             directory: Some(cmd.directory.to_string_lossy().to_string()),
-            layout: Some("stacked".to_string()),
+            layout: Some("main-vertical".to_string()),
             panes: Vec::new(),
         });
     }

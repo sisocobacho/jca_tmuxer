@@ -4,7 +4,7 @@ search_paths:
   - ~/workspace
 
 defaults:
-  layout: stacked
+  layout: main-vertical
   windows:
     - name: editor
       command: nvim

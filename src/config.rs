@@ -143,7 +143,7 @@ pub fn builtin_defaults() -> Config {
             "~/workspace".to_string(),
         ],
         defaults: Defaults {
-            layout: Some("stacked".to_string()),
+            layout: Some("main-vertical".to_string()),
             windows: vec![
                 WindowConfig {
                     name: "editor".to_string(),

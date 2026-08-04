@@ -113,7 +113,7 @@ fn save_project_seeds_new_config_with_builtin_defaults() {
 
     let loaded = config::load_path(&cfg).expect("load");
     assert!(!loaded.search_paths.is_empty());
-    assert_eq!(loaded.defaults.layout.as_deref(), Some("stacked"));
+    assert_eq!(loaded.defaults.layout.as_deref(), Some("main-vertical"));
     assert!(!loaded.defaults.windows.is_empty());
 }
 

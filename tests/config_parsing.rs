@@ -9,7 +9,7 @@ fn parses_config_yaml() {
         &path,
         r#"
 defaults:
-  layout: stacked
+  layout: main-vertical
   windows:
     - name: editor
       command: nvim

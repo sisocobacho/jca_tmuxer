@@ -100,7 +100,7 @@ mkdir -p ~/.config/jca_tmuxer
 
 ```yaml
 defaults:
-  layout: stacked
+  layout: main-vertical
   windows:
     - name: editor
       command: nvim
@@ -330,11 +330,21 @@ Highest to lowest priority:
 ### Supported keys
 
 - `search_paths`: fallback directories for project discovery
-- `defaults.layout`: default window layout
+- `defaults.layout`: default window layout. Valid values: `even-horizontal`, `even-vertical`, `main-horizontal`, `main-vertical`, `tiled`
 - `defaults.windows`: default windows list
 - `projects.<name>.root`: project root path
 - `projects.<name>.extend`: merge with defaults when true
 - `projects.<name>.windows`: project window definitions
+
+Layout descriptions:
+
+| Layout | Description |
+|---|---|
+| `even-horizontal` | Panes split evenly from left to right |
+| `even-vertical` | Panes split evenly from top to bottom |
+| `main-horizontal` | Large main pane on top; remaining panes spread below |
+| `main-vertical` | Large main pane on the left; remaining panes spread to the right |
+| `tiled` | All panes evenly tiled with equal space |
 
 Save-related CLI options:
 
