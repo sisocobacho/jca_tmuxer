@@ -166,6 +166,12 @@ jca_tmuxer-completions bash > /tmp/jca_tmuxer.bash
 jca_tmuxer-completions bash --bin-name jtmx > /tmp/jtmx.bash
 ```
 
+Current support:
+
+- Completion script generation: `bash`, `zsh`, `fish`, `elvish`, `powershell`
+- Dynamic project name autocomplete from configured projects (`--list`): `bash`, `zsh`
+- Static (flag/option) completion only: `fish`, `elvish`, `powershell`
+
 Bash install:
 
 ```bash
@@ -188,6 +194,57 @@ Fish install:
 jca_tmuxer-completions fish > ~/.config/fish/completions/jca_tmuxer.fish
 jca_tmuxer-completions fish --bin-name jtmx > ~/.config/fish/completions/jtmx.fish
 ```
+
+Load completion in your current shell:
+
+Bash:
+
+```bash
+source ~/.local/share/bash-completion/completions/jca_tmuxer
+source ~/.local/share/bash-completion/completions/jtmx
+```
+
+To persist in bash, ensure your `~/.bashrc` loads bash-completion and your local completions directory:
+
+```bash
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+  . /usr/share/bash-completion/bash_completion
+fi
+```
+
+Zsh:
+
+```bash
+mkdir -p ~/.zfunc
+fpath=(~/.zfunc $fpath)
+autoload -Uz compinit && compinit
+```
+
+To persist in zsh, add the `fpath` and `compinit` lines to `~/.zshrc`.
+
+Fish:
+
+- Files under `~/.config/fish/completions/` are auto-loaded by fish.
+- If a shell is already open, run `exec fish` to reload.
+
+Verify completion is loaded:
+
+```bash
+# bash
+complete -p jca_tmuxer
+complete -p jtmx
+
+# zsh
+whence -w _jca_tmuxer
+whence -w _jtmx
+```
+
+Quick troubleshooting (completion not triggering):
+
+- Bash: verify it is loaded with `complete -p jca_tmuxer` (or `complete -p jtmx`)
+- Bash: if missing, reload completion and current shell config
+- Zsh: ensure `~/.zfunc` is in `fpath`, then run `autoload -Uz compinit && compinit`
+- Verify project source works: `jca_tmuxer --list`
 
 ### Add ad-hoc commands
 
