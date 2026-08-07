@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Add dynamic project-name autocomplete for `bash` and `zsh` completion scripts
+- Source completion candidates from configured projects via `jca_tmuxer --list`
+- Preserve bash completion fallback behavior with `bashdefault`/`default` options
+- Add completion tests for dynamic hooks and custom `--bin-name` integration
+- Document shell completion support matrix and shell loading/troubleshooting steps
+
 ## 0.4.0
 
 - Add `jca_tmuxer-completions` helper binary to generate shell completion scripts
